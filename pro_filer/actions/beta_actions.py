@@ -10,7 +10,7 @@ def show_deepest_file(context):
 
 
 def find_file_by_name(context, search_term, case_sensitive=True):
-    if not search_term:
+    if not search_term or not context["all_files"]:
         return []
 
     found_files = []
@@ -19,8 +19,8 @@ def find_file_by_name(context, search_term, case_sensitive=True):
         file_name = path.split("/")[-1]
 
         if not case_sensitive:
-            file_name.lower()
-            search_term.lower()
+            file_name = file_name.lower()
+            search_term = search_term.lower()
 
         if search_term in file_name:
             found_files.append(path)
