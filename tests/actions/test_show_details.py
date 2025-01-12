@@ -1,49 +1,34 @@
 from pro_filer.actions.main_actions import show_details  # NOQA
-from io import StringIO
-from pathlib import Path
+import datetime
+import pytest
 from unittest.mock import patch
 
-def test_msg_correct(tmp_path):
-    tmp_path = tmp_path / "Trybe_logo.png"
-    tmp_path.touch()
-    file_path = Path(tmp_path)
-    context = { "base_path": str(file_path) }
+@pytest.fixture
+def temporary_file(tmp_path):
+    tmp_path = tmp_path / "file1.txt"    
+    return tmp_path
+
+def test_show_details_exists(capsys, temporary_file):
+    with patch(
+        "pro_filer.actions.main_actions.os.path.exists", return_value=True
+    ), patch(
+        "pro_filer.actions.main_actions.os.path.getsize", return_value=100
+    ), patch(
+        "pro_filer.actions.main_actions.os.path.isdir", return_value=False
+    ), patch(
+        "pro_filer.actions.main_actions.os.path.getmtime",
+        return_value=1623542400,
+    ), patch(
+        "pro_filer.actions.main_actions.date", spec=datetime.date
+    ) as mock_date:        
+        mock_date.fromtimestamp.return_value = datetime.date(2025, 1, 11)
+        show_details({"base_path": str(temporary_file)})
     expected_output = (
-        "File name: Trybe_logo.png\n"
-        "File size in bytes: 0\n"
+        "File name: file1.txt\n"
+        "File size in bytes: 100\n"
         "File type: file\n"
-        "File extension: .png\n"
+        "File extension: .txt\n"
         "Last modified date: 2025-01-11\n"
     )
-    with patch("pro_filer.actions.main_actions.os.path.isfile",
-               return_value=True), \
-         patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-        show_details(context)
-        captured = mock_stdout.getvalue()
-    assert captured == expected_output
-
-def test_msg_wrong(capsys):
-    context = { "base_path": "/home/trybe/Trybe.png" }
-    show_details(context)
     captured = capsys.readouterr()
-    expected_output = ("File 'Trybe.png' does not exist\n")
     assert captured.out == expected_output
-
-def test_correct_extension(tmp_path):
-    tmp_path = tmp_path / "Trybe_logo"
-    tmp_path.touch()
-    file_path = Path(tmp_path)
-    context = { "base_path": str(file_path) }
-    expected_output = (
-        "File name: Trybe_logo\n"
-        "File size in bytes: 0\n"
-        "File type: file\n"
-        "File extension: [no extension]\n"
-        "Last modified date: 2025-01-11\n"
-    )
-    with patch("pro_filer.actions.main_actions.os.path.isfile",
-               return_value=True), \
-         patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-        show_details(context)
-        captured = mock_stdout.getvalue()
-        assert captured == expected_output

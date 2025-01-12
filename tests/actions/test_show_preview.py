@@ -1,6 +1,5 @@
 from pro_filer.actions.main_actions import show_preview  # NOQA
 
-
 def test_show_preview_success(capsys):
     context = {
         
