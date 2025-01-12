@@ -1,50 +1,53 @@
 from pro_filer.actions.main_actions import show_preview  # NOQA
 
-def test_show_preview_sucess(capsys):
+
+def test_show_preview_success(capsys):
+    # GIVEN
     context = {
-      "all_files": [],
-      "all_dirs": []
+        
+        "all_files": ["src/__init__.py", "src/app.py", "src/utils/__init__.py"],
+        "all_dirs": ["src", "src/utils"],
     }
+    expected_out =  f"Found 3 files and 2 directories\nFirst 5 files: ['src/__init__.py', 'src/app.py', 'src/utils/__init__.py']\nFirst 5 directories: ['src', 'src/utils']\n"
     show_preview(context)
     captured = capsys.readouterr()
-    assert captured.out == "Found 0 files and 0 directories\n"
+    assert captured.out == expected_out
 
-def test_show_preview_context(capsys):
-    context = {
-        "all_files": ["src/__init__.py", "src/app.py", "src/utils/__init__.py"],
-        "all_dirs": ["src", "src/utils"]
+def test_show_preview_with_context(capsys):
+    context = {        
+        "all_files": [],
+        "all_dirs": [],
     }
+    expected_out =  f"Found 0 files and 0 directories\n"
     show_preview(context)
     captured = capsys.readouterr()
-    expected_output = (
-        "Found 3 files and 2 directories\n"
-        "First 5 files: ['src/__init__.py', 'src/app.py', "
-        "'src/utils/__init__.py']\n"
-        "First 5 directories: ['src', 'src/utils']\n"
-    )
-    assert captured.out == expected_output
+    assert captured.out == expected_out
 
-def test_show_preview_error_file():
-    context = { "all_files": [], "all_dirs": ["src", "src/utils"] }
-    if len(context["all_dirs"]) > 1 and len(context["all_files"]) == 0:
-        assert "all_files not must be empty"
-
-def test_show_preview_error_dir():
+def test_show_preview_with_five_files(capsys):
     context = {
-        "all_files": ["src/__init__.py", "src/app.py", "src/utils/__init__.py"],
-        "all_dirs": []
+        "all_files": [
+            "src/__init__.py", "src/app.py","src/utils/__init__.py",
+            "src/utils/alpha.py", "src/utils/beta.py", "src/utils/gama.py"
+        ],
+        "all_dirs": ["src", "src/utils"],
+        
     }
-    if len(context["all_dirs"]) == 0 and len(context["all_files"]) > 0:
-        assert "all_dirs not must be empty"
+    expected_out =  f"Found 6 files and 2 directories\nFirst 5 files: ['src/__init__.py', 'src/app.py', 'src/utils/__init__.py', 'src/utils/alpha.py', 'src/utils/beta.py']\nFirst 5 directories: ['src', 'src/utils']\n"
+    show_preview(context)
+    captured = capsys.readouterr()
+    assert captured.out == expected_out
 
 
-def test_show_preview_error_len():
+def test_show_preview_with_five_directories(capsys):
     context = {
-        "all_files": ["src/__init__.py", "src/app.py",
-                      "src/utils/__init__.py", "src/utils/ui.py",
-                      "src/utils/__init__.py", "src/testes/test.py"],
-        "all_dirs": ["src", "src/utils", "src/test", "src/arrays",
-                     "src/", "src/func"]
+        "all_files": [
+            "src/__init__.py", "src/utils/__init__.py",
+            "src/libs/alpha.py", "src/tests/beta.py",
+            "src/entities/gama.py", "src/assets/template.py"
+        ],
+        "all_dirs": ["src", "src/utils", "src/libs", "src/tests", "src/entities", "src/assets"],        
     }
-    if len(context['all_files']) > 5 or len(context['all_dirs']) > 5:
-        assert "Error: all_files and all_dirs must not be bigger 5"
+    expected_out =  f"Found 6 files and 6 directories\nFirst 5 files: ['src/__init__.py', 'src/utils/__init__.py', 'src/libs/alpha.py', 'src/tests/beta.py', 'src/entities/gama.py']\nFirst 5 directories: ['src', 'src/utils', 'src/libs', 'src/tests', 'src/entities']\n"
+    show_preview(context)
+    captured = capsys.readouterr()
+    assert captured.out == expected_out
