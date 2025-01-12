@@ -30,5 +30,5 @@ def test_show_details_exists(capsys, temporary_file):
         "File extension: .txt\n"
         "Last modified date: 2025-01-11\n"
     )
-    captured = capsys.readouterr()
-    assert captured.out == expected_output
+    captured = capsys.readouterr().out
+    assert captured == expected_output

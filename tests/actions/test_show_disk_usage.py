@@ -12,4 +12,3 @@ def test_show_disk_usage_with_files(capsys, tmp_path):
     captured = capsys.readouterr().out.splitlines()
     assert captured[0].__contains__("app.py")
     assert captured[0].__contains__("4000 (100%)")
-    
